@@ -30,8 +30,8 @@ local fns = {
     _validateSuperCall = function(self, classDef)
         if classDef.extends and self.wasSuperCalled == 0 then
             self.wasSuperCalled = 0
-            if self.classDefinition.name and self.classDefinition.name ~= "" then
-                print("[ERROR]: Super constructor was not called in " .. self.classDefinition.name .. ".")
+            if classDef.name and classDef.name ~= "" then
+                print("[ERROR]: Super constructor was not called in " .. classDef.name .. ".")
                 os.exit(1)
             else
                 print("[ERROR]: Some class is missing a super constructor call.")
@@ -41,7 +41,7 @@ local fns = {
     end,
 }
 
-local function class(classDefinition)
+return function(classDefinition)
     return {
         new = function(_, constructorParams)
             local blueprint = {}
@@ -54,5 +54,3 @@ local function class(classDefinition)
         end,
     }
 end
-
-return class
