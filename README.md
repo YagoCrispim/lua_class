@@ -23,7 +23,7 @@ local SecretAgent = class({
 local Person = class({
   extends = SecretAgent,
   constructor = function(self, params)
-    self.super({ agentId = params.agentId })
+    self.super(params)
     self.name = params.name
     self.age = params.age
   end,
