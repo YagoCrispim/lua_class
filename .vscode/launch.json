@@ -15,7 +15,7 @@
       "type": "lua",
       "request": "launch",
       "name": "Debug tests",
-      "program": "${workspaceFolder}/tests/tests.lua"
+      "program": "${workspaceFolder}/run_tests.lua"
     }
   ]
 }
