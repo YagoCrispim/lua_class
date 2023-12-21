@@ -1,56 +1,50 @@
-local fns = {
-    wasSuperCalled = 0,
-    _runConstructor = function(_, instance, constructor, params)
-        if constructor and type(constructor) == "function" then
-            constructor(instance, params)
-        end
-        return instance
-    end,
-
-    _setMethods = function(_, instance, methods)
-        if methods and type(methods) == "table" then
-            for name, method in pairs(methods) do
-                instance[name] = method
-            end
-        end
-        return instance
-    end,
-
-    _setInheritance = function(self, instance, superClass)
-        if superClass and type(superClass) == "table" then
-            instance.super = function(parameters)
-                self.wasSuperCalled = 1
-                local superInstance = superClass:new(parameters)
-                setmetatable(instance, { __index = superInstance })
-            end
-        end
-        return instance
-    end,
-
-    _validateSuperCall = function(self, classDef)
-        if classDef.extends and self.wasSuperCalled == 0 then
-            self.wasSuperCalled = 0
-            if classDef.name and classDef.name ~= "" then
-                print("[ERROR]: Super constructor was not called in " .. classDef.name .. ".")
-                os.exit(1)
-            else
-                print("[ERROR]: Some class is missing a super constructor call.")
-                os.exit(1)
-            end
-        end
-    end,
-}
-
 return function(classDefinition)
     return {
         new = function(_, constructorParams)
-            local blueprint = {}
-            if classDefinition == nil then return blueprint end
-            blueprint = fns:_setMethods(blueprint, classDefinition.methods)
-            blueprint = fns:_setInheritance(blueprint, classDefinition.extends)
-            blueprint = fns:_runConstructor(blueprint, classDefinition.constructor, constructorParams)
-            fns:_validateSuperCall(classDefinition)
-            return blueprint
+            local newClassInstance = {}
+
+            if not classDefinition then
+                return newClassInstance
+            end
+
+            local methods = classDefinition.methods
+            local constructor = classDefinition.constructor
+            local superClass = classDefinition.extends
+
+            if methods then
+                for methodName, method in pairs(methods) do
+                    newClassInstance[methodName] = function(self, ...)
+                        return method(self, ...)
+                    end
+                end
+            end
+
+            if superClass then
+                if type(superClass) == "table" then
+                    newClassInstance.super = function(self)
+                        local superClassInstance = superClass:new(constructorParams)
+                        for k, v in pairs(superClassInstance) do
+                            if newClassInstance[k] == nil then
+                                newClassInstance[k] = v
+                            else
+                                error(
+                                    "[ERROR]: The child class already has a property named '[" ..
+                                    k .. "]' inherited from the parent class."
+                                )
+                            end
+                        end
+                    end
+                end
+            end
+
+            if constructor then
+                if constructor and type(constructor) == "function" then
+                    constructor(newClassInstance, constructorParams)
+                end
+                return newClassInstance
+            end
+
+            return newClassInstance
         end,
     }
 end
