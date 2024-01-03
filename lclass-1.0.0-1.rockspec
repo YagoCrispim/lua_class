@@ -1,7 +1,7 @@
 package = "lclass"
 version = "1.0.0-1"
 source = {
-   url = "git+ssh://git@github.com/YagoCrispim/lua-class.git",
+   url = "git+https://github.com/YagoCrispim/lua-class.git",
    tag = "v1.0.0"
 }
 description = {
