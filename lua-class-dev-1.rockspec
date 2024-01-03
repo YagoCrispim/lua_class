@@ -1,4 +1,4 @@
-package = "lua-class"
+package = "lua_class"
 version = "v1.0.0"
 source = {
    url = "git+ssh://git@github.com/YagoCrispim/lua-class.git",
