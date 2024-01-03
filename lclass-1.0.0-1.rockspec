@@ -1,5 +1,5 @@
 package = "lclass"
-version = "1.0.0"
+version = "1.0.0-1"
 source = {
    url = "git+ssh://git@github.com/YagoCrispim/lua-class.git",
    tag = "v1.0.0"
@@ -9,9 +9,6 @@ description = {
    detailed = "Emulates class behavior",
    homepage = "https://github.com/YagoCrispim/lua-class",
    license = "MIT",
-   labels = {
-	"class", "inheritance", "namespace", "oop", "object"
-   },
     maintainer = "yagoc <yagocrispim.r.s@gmail.com>"
 }
 dependencies = {
