@@ -7,13 +7,14 @@ description = {
    summary = " Classes in Lua",
    detailed = "Emulates class behavior",
    homepage = "https://github.com/YagoCrispim/lua-class",
-   license = "MIT"
+   license = "MIT",
+   labels = {
+		"class", "inheritance", "namespace", "oop", "object"
+	}
 }
 build = {
    type = "builtin",
    modules = {
-      class = "class.lua",
-      class_test = "class_test.lua",
-      example = "example.lua"
+      class = "class.lua"
    }
 }
