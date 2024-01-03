@@ -9,8 +9,9 @@ description = {
    homepage = "https://github.com/YagoCrispim/lua-class",
    license = "MIT",
    labels = {
-		"class", "inheritance", "namespace", "oop", "object"
-	}
+	"class", "inheritance", "namespace", "oop", "object"
+   },
+    maintainer = "yagoc <yagocrispim.r.s@gmail.com>"
 }
 build = {
    type = "builtin",
