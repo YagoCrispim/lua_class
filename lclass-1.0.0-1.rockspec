@@ -16,7 +16,9 @@ dependencies = {
 }
 build = {
    type = "none",
-   modules = {
-      class = "class.lua"
+   install = {
+      lua = {
+         "class.lua"
+      }
    }
 }
