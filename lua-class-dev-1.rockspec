@@ -1,7 +1,8 @@
 package = "lua-class"
 version = "v1.0.0"
 source = {
-   url = "git+ssh://git@github.com/YagoCrispim/lua-class.git"
+   url = "git+ssh://git@github.com/YagoCrispim/lua-class.git",
+   tag = "v1.0.0"
 }
 description = {
    summary = " Classes in Lua",
@@ -13,8 +14,11 @@ description = {
    },
     maintainer = "yagoc <yagocrispim.r.s@gmail.com>"
 }
+dependencies = {
+   "lua ~> 5.4"
+}
 build = {
-   type = "builtin",
+   type = "none",
    modules = {
       class = "class.lua"
    }
