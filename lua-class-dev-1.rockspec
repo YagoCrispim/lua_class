@@ -1,5 +1,5 @@
 package = "lua_class"
-version = "v1.0.0"
+version = "1.0.0"
 source = {
    url = "git+ssh://git@github.com/YagoCrispim/lua-class.git",
    tag = "v1.0.0"
