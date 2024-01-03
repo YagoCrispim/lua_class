@@ -6,7 +6,7 @@ source = {
 description = {
    summary = " Classes in Lua",
    detailed = "Emulates class behavior",
-   homepage = "https://github.com/YagoCrispim",
+   homepage = "https://github.com/YagoCrispim/lua-class",
    license = "MIT"
 }
 build = {
