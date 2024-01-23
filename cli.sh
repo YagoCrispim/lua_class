@@ -27,6 +27,6 @@ case "$ACTION" in
 
         ;;
     *)
-        echo "Usage: $0 {test}"
+        echo "Usage: $0 {test|example|install}"
         exit 1
 esac

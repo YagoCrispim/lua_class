@@ -1,15 +1,35 @@
 return function(classDefinition)
+    local constants = {
+        constructor = 'constructor',
+        extends = 'extends',
+    }
+
     return {
-        new = function(_, constructorParams)
+        new = function(self, constructorParams)
+            --[[
+                \-1 = super() not needed \
+                0 = super() needed, but not called \
+                1 = super() needed and called
+            ]]
+            local wasSuperCalled = -1
+
+            ---
             local newClassInstance = {}
 
-            if not classDefinition then
-                return newClassInstance
-            end
+            if not classDefinition then return newClassInstance end
 
-            local methods = classDefinition.methods
-            local constructor = classDefinition.constructor
-            local superClass = classDefinition.extends
+            local constructor = nil
+            local methods = {}
+
+            for k, v in pairs(classDefinition) do
+                if k == constants.constructor then
+                    constructor = v
+                else
+                    if k ~= constants.extends then
+                        methods[k] = v
+                    end
+                end
+            end
 
             if methods then
                 for methodName, method in pairs(methods) do
@@ -19,29 +39,29 @@ return function(classDefinition)
                 end
             end
 
-            if superClass then
-                if type(superClass) == "table" then
-                    newClassInstance.super = function(self)
-                        local superClassInstance = superClass:new(constructorParams)
-                        for k, v in pairs(superClassInstance) do
-                            if newClassInstance[k] == nil then
-                                newClassInstance[k] = v
-                            else
-                                error(
-                                    "[ERROR]: The child class already has a property named '[" ..
-                                    k .. "]' inherited from the parent class."
-                                )
-                            end
-                        end
+            local superClass = classDefinition.extends
+            if superClass and type(superClass) == "table" then
+                wasSuperCalled = 0
+
+                newClassInstance.super = function()
+                    wasSuperCalled = 1
+                    local superClassInstance = superClass:new(constructorParams)
+                    for k, v in pairs(superClassInstance) do
+                        newClassInstance[k] = v
                     end
                 end
             end
 
-            if constructor then
-                if constructor and type(constructor) == "function" then
-                    constructor(newClassInstance, constructorParams)
+            if constructor and type(constructor) == "function" then
+                constructor(newClassInstance, constructorParams)
+            end
+
+            if wasSuperCalled == 0 then
+                if classDefinition.name then
+                    error("super() was not called in the constructor of the class " .. classDefinition.name)
+                else
+                    error("some class constructor did not call super()")
                 end
-                return newClassInstance
             end
 
             return newClassInstance
