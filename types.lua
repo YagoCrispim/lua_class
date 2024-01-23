@@ -1,0 +1,12 @@
+--- @class E_Person : E_SecretAgent
+--- @field name string
+--- @field age number
+--- @field getName fun():string
+--- @field getAge fun():number
+--- @return E_Person
+
+--- @class E_SecretAgent
+--- @field agentId number
+--- @field getSecretName fun():string
+--- @field getAgentId fun():number
+--- @return E_SecretAgent
