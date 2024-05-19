@@ -4,8 +4,8 @@ return function(classDefinition)
         extends = 'extends',
     }
 
-    return {
-        new = function(self, constructorParams)
+    local newFn = {
+        new = function(_, constructorParams)
             --[[
                 \-1 = super() not needed \
                 0 = super() needed, but not called \
@@ -21,20 +21,16 @@ return function(classDefinition)
             local constructor = nil
             local methods = {}
 
-            for k, v in pairs(classDefinition) do
-                if k == constants.constructor then
-                    constructor = v
-                else
-                    if k ~= constants.extends then
-                        methods[k] = v
-                    end
-                end
-            end
-
             if methods then
-                for methodName, method in pairs(methods) do
-                    newClassInstance[methodName] = function(self, ...)
-                        return method(self, ...)
+                for key, value in pairs(classDefinition) do
+                    if key == constants.constructor then
+                        constructor = value
+                    elseif type(value) == "function" then
+                        newClassInstance[key] = function(self, ...)
+                            return value(self, ...)
+                        end
+                    else
+                        newClassInstance[key] = value
                     end
                 end
             end
@@ -67,4 +63,6 @@ return function(classDefinition)
             return newClassInstance
         end,
     }
+
+    return newFn
 end
