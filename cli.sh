@@ -1,32 +1,31 @@
 #!/bin/bash
 
-ACTION=$1
+OPTION=$1
+FLAG=$2
+LUA=lua5.4
 
-case "$ACTION" in
-    example)
-        lua ./example.lua
-        ;;
-    test)
-        lua ./run_tests.lua
-        ;;
-    install)
-        LIBS_PATH="./lib"
-        REPOSITORIES=$(cat ./libs.txt)
+if [ "$OPTION" = "b" ]; then
+  $LUA ./benchmarks/init.lua
+elif [ "$OPTION" = "t" ]; then 
+  $LUA tests/init.lua
+elif [ "$OPTION" = "i" ]; then 
+    if [ "$FLAG" = "force" ]; then
+      rm -rf lua_modules
+    fi
 
-        for REPOSITORY in "${REPOSITORIES[@]}"
-        do
-            echo "----- Installing $REPOSITORY -----"
-            LIB_NAME=$(echo $REPOSITORY | cut -d'/' -f2 | cut -d'.' -f1)
-            LIB_PATH="$LIBS_PATH/$LIB_NAME"
+    mkdir lua_modules
+    cd lua_modules
 
-            if [ ! -d "$LIB_PATH" ]; then
-                git clone $REPOSITORY $LIB_PATH
-            fi
-            echo ""
-        done
+    git clone https://github.com/YagoCrispim/moontest.git
+    rm -rf ./moontest/.git
 
-        ;;
-    *)
-        echo "Usage: $0 {test|example|install}"
-        exit 1
-esac
+    git clone https://github.com/slembcke/debugger.lua.git
+    mv debugger.lua debugger
+    rm -rf ./debugger/.git
+    
+    cd --
+else
+  echo "[ERROR]: Option not found"
+  echo "Usage: cli.sh b[enchmark]|t[est]|i[nstall]"
+fi
+
