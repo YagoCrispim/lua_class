@@ -50,34 +50,36 @@ local SuperTestPerson = class {
 ---@field constructor_called boolean
 ---@field get_name_and_age table
 local TestPerson = class {
-    __use = {TableStringify},
+    __use = { TableStringify },
     name = "John Doe",
     age = 21,
     constructor_called = false,
 
     ---@param self TestPerson
     constructor = function(self, params)
-        self.name = params.name or self.name
-        self.age = params.age or self.age
+        if params then
+            self.name = params.name or self.name
+            self.age = params.age or self.age
+        end
         self.constructor_called = true
     end,
 
     ---@param self TestPerson
     get_name_and_age = function(self)
-        return {name = self.name, age = self.age}
+        return { name = self.name, age = self.age }
     end
 }
 
 -- Test context
 ---@class TestContext
 ---@field instance TestPerson | nil
-local tc = {instance = nil}
+local tc = { instance = nil }
 
 mt.describe("class", {
     -- before_all = function() print(">> Before all") end,
     -- after_all = function() print(">> After all") end,
     --
-    before_each = function() tc.instance = TestPerson:new() end,
+    before_each = function() tc.instance = TestPerson:new({}) end,
     -- after_each = function() print("After each") end,
     --
     mt.it("should execute the class constructor", function()
@@ -93,7 +95,7 @@ mt.describe("class", {
             --
             data.name == "John Doe", data.age == 21
         }
-    end), -- 
+    end), --
     --
     mt.it(
         "should instantiate the super class, inherit its methods and pass the constructor params",
@@ -103,20 +105,20 @@ mt.describe("class", {
                 __extends = SuperTestPerson,
 
                 ---@param self Test
-                constructor = function(self) self.super() end
+                constructor = function(self) self:super() end
             })
 
             ---@type Test
-            local instance = Test.new()
+            local instance = Test:new({})
 
-            return {instance:get_is_super(), instance.is_super}
-        end), -- 
+            return { instance:get_is_super(), instance.is_super }
+        end), --
     --
     mt.it("should instantiate an empty class", function()
         local EmptyClass = class()
         local emptyClassInstance = EmptyClass:new()
-        return {emptyClassInstance ~= nil, type(emptyClassInstance) == "table"}
-    end), -- 
+        return { emptyClassInstance ~= nil, type(emptyClassInstance) == "table" }
+    end), --
     --
     mt.it(
         "should instantiate the super class twice without affecting the actual instances",
@@ -128,13 +130,15 @@ mt.describe("class", {
             local Test = class({
                 __extends = SuperTestPerson,
                 name = "",
-                tbl_value = {value = 'John'},
+                tbl_value = { value = 'John' },
 
                 ---@param self Test
                 constructor = function(self, params)
-                    self.super(params)
-                    self.name = params.name
-                    self.tbl_value.value = params.name
+                    self:super(params)
+                    if params then 
+                        self.name = params.name
+                        self.tbl_value.value = params.name
+                    end
                 end,
 
                 ---@param self Test
@@ -142,19 +146,19 @@ mt.describe("class", {
             })
 
             ---@type Test
-            local john = Test.new({name = "John", super_name = "Super John"})
+            local john = Test:new({ name = "John", super_name = "Super John" })
             ---@type Test
-            local jane = Test.new({name = "Jane", super_name = "Super Jane"})
+            local jane = Test:new({ name = "Jane", super_name = "Super Jane" })
 
             john:set_name("John Again")
             jane:set_name("Jane Again")
 
             return {
-                john.name == "John Again", --
-                jane.name == "Jane Again", --
+                john.name == "John Again",       --
+                jane.name == "Jane Again",       --
                 john.super_name == "Super John", --
                 jane.super_name == "Super Jane", --
-                john.tbl_value.value == "John", --
+                john.tbl_value.value == "John",  --
                 jane.tbl_value.value == "Jane"
             }
         end), --
@@ -162,31 +166,31 @@ mt.describe("class", {
     mt.it(
         "should throw error if class extends another class but the super is not called",
         function()
-            local Test = class({__extends = SuperTestPerson})
-            local status, err = pcall(function() Test.new() end)
+            local Test = class({ __extends = SuperTestPerson })
+            local status, err = pcall(function() Test:new({}) end)
 
             ---@diagnostic disable-next-line: need-check-nil
             local errMessage = err:match(":%d+: (.*)")
 
-            return {status == false, errMessage == "'super()' not called"}
-        end), -- 
+            return { status == false, errMessage == "'super()' not called" }
+        end), --
     --
     mt.it("should extend trait behavior", function()
         local result = tc.instance:stringify()
-        return {result:match("age: 21"), result:match("name: John Doe")}
-    end), -- 
+        return { result:match("age: 21"), result:match("name: John Doe") }
+    end), --
     --
     mt.it(
         'should apply trait considering non function values as unique per instance',
         function()
             local AnyTrait = {
-                trait_table = {value = 21},
+                trait_table = { value = 21 },
                 set_value = function(self, value)
                     self.trait_table.value = value
                 end
             }
 
-            local AnyClass = class {__use = {AnyTrait}}
+            local AnyClass = class { __use = { AnyTrait } }
 
             local instance_one = AnyClass:new()
             instance_one:set_value(100)

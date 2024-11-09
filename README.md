@@ -1,56 +1,60 @@
 # lua-class
+
 Classes in Lua - WIP
 
 ## Example
 
 ```lua
-local class = require "class"
+local class = require "src.class"
 
-local SecretAgent = class({
+local LogAllTrait = {
+  log_all = function(self)
+    print("Name: " .. self.name)
+    print("Age: " .. self.age)
+    print("SecretName: " .. self.secret_name)
+    print("AgentId: " .. self.agent_id)
+  end
+}
+
+local SecretAgent = class {
+  __use = { LogAllTrait },
+
   constructor = function(self, params)
-    self.agentId = params.agentId
+    self.secret_name = 'Confidential'
+    self.agent_id = params.agent_id
   end,
 
-  getSecretName = function()
-    return "Confidential"
-  end,
+  super_method = function()
+    print("[SecretAgent]: Super method")
+  end
+}
 
-  getAgentId = function(self)
-    return self.agentId
-  end,
-})
-
-local Person = class({
-  extends = SecretAgent,
+local Person = class {
+  __extends = SecretAgent,
   constructor = function(self, params)
-    self.super(params)
+    self:super(params)
     self.name = params.name
     self.age = params.age
   end,
 
-  getName = function(self)
-    return self.name
-  end,
+  class_method = function()
+    print("[Person]: Class method")
+  end
+}
 
-  getAge = function(self)
-    return self.age
-  end,
-})
-
---- @type E_Person
-local john = Person:new({ name = "John Doe", age = 21, agentId = 123 })
-
---- @type E_Person
-local jane = Person:new({ name = "Jane Doe", age = 20, agentId = 456 })
+local john = Person:new({ name = "John Doe", age = 21, agent_id = 123 })
+local jane = Person:new({ name = "Jane Doe", age = 20, agent_id = 456 })
 
 --
-print("Name: " .. john:getName())
-print("Age: " .. john:getAge())
-print("SecretName: " .. john:getSecretName())
-print("AgentId: " .. john:getAgentId())
-print("---------------")
-print("Name: " .. jane:getName())
-print("Age: " .. jane:getAge())
-print("SecretName: " .. jane:getSecretName())
-print("AgentId: " .. jane:getAgentId())
+
+john:log_all()
+john:class_method()
+john:super_method()
+
+print('---')
+
+jane:log_all()
+jane:class_method()
+jane:super_method()
+
 ```

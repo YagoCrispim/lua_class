@@ -12,30 +12,34 @@ local function blob(mbs)
     return blob_value:sub(1, sizeInBytes)
 end
 
----@param person_class Person
----@return nil
-local function run_tests(person_class)
-    local cycles = 50
-    print("Cycles: " .. cycles)
-    print("Memory before execution:", collectgarbage("count") .. ' kbps')
+local function measure_memory_and_time(func, ...)
+    local start_memory = collectgarbage("count") -- Memória em kilobytes
+    local start_time = os.clock()                -- Tempo em segundos
 
-    local c = 0
-    while c < cycles do
-        local john = person_class:new()
-        local jane = person_class:new()
+    func(...)
 
-        john:create_blob(1)
-        jane:create_blob(1)
+    local end_memory = collectgarbage("count")
+    local end_time = os.clock()
 
-        c = c + 1
-    end
+    local memory_used_kb = end_memory - start_memory
+    local time_taken = end_time - start_time
+    local memory_used_mb = memory_used_kb / 1024
 
-    print("Memory after execution: " .. collectgarbage("count") .. ' kbps')
-    collectgarbage('collect')
-    print("Memory after forced GC exection: " .. collectgarbage("count") ..
-              ' kbps')
-    print('')
+    return memory_used_kb, memory_used_mb, time_taken
 end
 
-return {blob = blob, run_tests = run_tests}
+---@param Person Person
+---@return nil
+local function run_tests(Person)
+    -- Medindo o uso de memória e tempo para criar um blob de 10 MB
+    local mbs = 10
+    local memory_used_kb, memory_used_mb, time_taken = measure_memory_and_time(function()
+        local person = Person:new()
+        person:create_blob(mbs)
+    end)
 
+    print(string.format("Memória usada: %.2f KB (%.2f MB)", memory_used_kb, memory_used_mb))
+    print(string.format("Tempo gasto: %.2f segundos", time_taken))
+end
+
+return { blob = blob, run_tests = run_tests }

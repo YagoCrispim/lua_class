@@ -42,9 +42,9 @@ local function set_methods(context)
         c.was_super_called = 0
 
         ---@diagnostic disable-next-line: inject-field
-        c.new_instance.super = function(params)
+        c.new_instance.super = function(_, params)
             c.was_super_called = 1
-            local super_class_instance = class_definition.__extends.new(params)
+            local super_class_instance = class_definition.__extends:new(params)
             for k, v in pairs(super_class_instance) do
                 c.new_instance[k] = v
             end
@@ -113,7 +113,7 @@ end
 ---@return Class
 return function(class_definition)
     return {
-        new = function(constructor_params)
+        new = function(_, constructor_params)
             if not class_definition then return {} end
 
             ---@type _Cls_Context
@@ -152,8 +152,8 @@ end
 ---@class Class : table
 ---@field __name string
 ---@field __values fun(self: Class): table
----@field new fun(constructor_params?: table): table
----@field super? fun(params?: table): nil
+---@field new fun(self: Class, constructor_params?: table): table
+---@field super? fun(self: Class, params?: table): nil
 --
 ---@class Cls_Definition : table
 ---@field __name? string

@@ -5,17 +5,31 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "lua",
+      "name": "Debug benchmark",
+      "type": "lua-local",
       "request": "launch",
-      "name": "Debug",
-      "program": "${workspaceFolder}/example.lua"
+      "program": {
+        "lua": "lua",
+        "file": "${cwd}/benchmarks/init.lua"
+      }
     },
-
     {
-      "type": "lua",
+      "name": "Debug test",
+      "type": "lua-local",
       "request": "launch",
-      "name": "Debug tests",
-      "program": "${workspaceFolder}/run_tests.lua"
+      "program": {
+        "lua": "lua",
+        "file": "${cwd}/tests/class_spec.lua"
+      }
+    },
+    {
+      "name": "Debug example",
+      "type": "lua-local",
+      "request": "launch",
+      "program": {
+        "lua": "lua",
+        "file": "example.lua"
+      }
     }
   ]
 }
