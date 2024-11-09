@@ -1,7 +1,5 @@
 # lua-class
 
-Classes in Lua - WIP
-
 ## Example
 
 ```lua
